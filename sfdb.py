@@ -47,7 +47,8 @@ class SimpleFreeDB:
         req = urllib.request.urlopen(url)
         return req.read().decode('utf-8')
 
-    def _get_code(self, line):
+    @staticmethod
+    def _get_code(line):
         return int(line.split(maxsplit=1)[0])
 
     def _split_dtitle(self, dtitle):
