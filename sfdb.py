@@ -100,7 +100,7 @@ class SimpleFreeDB:
 
         return data
 
-if __name__ == '__main__':
+def main():
     test_queries = (
         # 200, 1 match
         (0xfd0ce112, 18, (150, 16732, 27750, 43075, 58800, 71690, 86442, 101030, 111812, 128367, 136967, 152115, 164812, 180337, 194072, 201690, 211652, 230517), 3299),
@@ -112,3 +112,6 @@ if __name__ == '__main__':
     for i, query in enumerate(test_queries):
         for match in fdb.query(*query):
             pprint.pprint(fdb.read(match[0], match[1]))
+
+if __name__ == '__main__':
+    main()
