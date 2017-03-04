@@ -57,7 +57,7 @@ class SimpleFreeDB:
         return author.rstrip(), title.lstrip()
 
     def query(self, discid, ntrks, offsets, nsecs):
-        cmd = 'query %x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
+        cmd = 'query %08x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
         data = self._cddb_cmd(cmd)
         lines = data.splitlines()
         code = self._get_code(lines[0])
@@ -77,7 +77,7 @@ class SimpleFreeDB:
         return matches
 
     def read(self, categ, discid):
-        cmd = 'read %s %x' % (categ, discid)
+        cmd = 'read %s %08x' % (categ, discid)
         data = self._cddb_cmd(cmd)
         lines = data.splitlines()
         code = self._get_code(lines[0])
