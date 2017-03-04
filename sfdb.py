@@ -20,6 +20,7 @@
 # under the License.
 #
 
+import re
 import socket
 import getpass
 import urllib.parse
@@ -38,6 +39,7 @@ class SimpleFreeDB:
         client = 'sfdb'
         hello = '%s %s %s %s' % (user, host, client, __version__)
         self._hello = urllib.parse.quote_plus(hello)
+        self._slash_split_regex = re.compile(r'(?<!\\)/')
 
     def _cddb_cmd(self, cmd):
         cmd_arg = urllib.parse.quote_plus('cddb ' + cmd)
@@ -48,6 +50,12 @@ class SimpleFreeDB:
     def _get_code(self, line):
         return int(line.split(maxsplit=1)[0])
 
+    def _split_dtitle(self, dtitle):
+        # Note: we can not use a simple dtitle.split('/') here because the
+        # slash could be escaped.
+        author, title = re.split(self._slash_split_regex, dtitle, maxsplit=1)
+        return author.rstrip(), title.lstrip()
+
     def query(self, discid, ntrks, offsets, nsecs):
         cmd = 'query %x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
         data = self._cddb_cmd(cmd)
@@ -57,13 +65,15 @@ class SimpleFreeDB:
         if code == 200:
             line = lines[0]
             _, categ, discid_str, dtitle = line.split(maxsplit=3)
-            matches.append((categ, int(discid_str, 16), dtitle))
+            artist, title = self._split_dtitle(dtitle)
+            matches.append((categ, int(discid_str, 16), artist, title))
         elif code in (210, 211):
             for line in lines[1:]:
                 if line == '.':
                     break
                 categ, discid_str, dtitle = line.split(maxsplit=2)
-                matches.append((categ, int(discid_str, 16), dtitle))
+                artist, title = self._split_dtitle(dtitle)
+                matches.append((categ, int(discid_str, 16), artist, title))
         return matches
 
     def read(self, categ, discid):
@@ -84,7 +94,9 @@ class SimpleFreeDB:
                 continue
             key, value = line.split('=', maxsplit=1)
             if key == 'DTITLE':
-                data['title'] = value # TODO: split?
+                artist, title = self._split_dtitle(value)
+                data['artist'] = artist
+                data['title'] = title
             elif key == 'DYEAR':
                 data['year'] = int(value)
             elif key == 'DGENRE':
@@ -109,6 +121,7 @@ def main():
     )
     import pprint
     fdb = SimpleFreeDB()
+    assert fdb._split_dtitle('foo \\/ bar / bla / baz') == ('foo \\/ bar', 'bla / baz')
     for i, query in enumerate(test_queries):
         for match in fdb.query(*query):
             pprint.pprint(fdb.read(match[0], match[1]))
