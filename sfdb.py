@@ -39,7 +39,7 @@ class _SimpleFreeDB:
         hello = '%s %s %s %s' % (user, host, client, __version__)
         self._hello = urllib.parse.quote_plus(hello)
 
-    def _cddb_cmd(self, cmd): #, discid, ntrks, offsets, nsecs):
+    def _cddb_cmd(self, cmd):
         cmd_arg = urllib.parse.quote_plus('cddb ' + cmd)
         url = '%s?cmd=%s&hello=%s&proto=%d' % (self.URL, cmd_arg, self._hello, self.PROTO)
         req = urllib.request.urlopen(url)
