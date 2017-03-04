@@ -27,7 +27,7 @@ import urllib.request
 
 __version__ = '0.1'
 
-class _SimpleFreeDB:
+class SimpleFreeDB:
 
     URL = 'http://freedb.freedb.org/~cddb/cddb.cgi'
     PROTO = 6
@@ -51,7 +51,7 @@ class _SimpleFreeDB:
         cmd = 'query %x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
         data = self._cddb_cmd(cmd)
         lines = data.splitlines()
-        code = _SimpleFreeDB._get_code(lines[0])
+        code = SimpleFreeDB._get_code(lines[0])
         matches = []
         if code == 200:
             line = lines[0]
@@ -69,7 +69,7 @@ class _SimpleFreeDB:
         cmd = 'read %s %x' % (categ, discid)
         data = self._cddb_cmd(cmd)
         lines = data.splitlines()
-        code = _SimpleFreeDB._get_code(lines[0])
+        code = SimpleFreeDB._get_code(lines[0])
         if code != 210:
             return None
 
@@ -107,7 +107,7 @@ if __name__ == '__main__':
         (0xb70e170e, 14, (150, 20828, 36008, 53518, 71937, 90777, 109374, 128353, 150255, 172861, 192062, 216672, 235357, 253890), 3609),
     )
     import pprint
-    fdb = _SimpleFreeDB()
+    fdb = SimpleFreeDB()
     for i, query in enumerate(test_queries):
         for match in fdb.query(*query):
             pprint.pprint(fdb.read(match[0], match[1]))
