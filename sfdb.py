@@ -52,7 +52,7 @@ class SimpleFreeDB:
         cmd = 'query %x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
         data = self._cddb_cmd(cmd)
         lines = data.splitlines()
-        code = SimpleFreeDB._get_code(lines[0])
+        code = self._get_code(lines[0])
         matches = []
         if code == 200:
             line = lines[0]
@@ -70,7 +70,7 @@ class SimpleFreeDB:
         cmd = 'read %s %x' % (categ, discid)
         data = self._cddb_cmd(cmd)
         lines = data.splitlines()
-        code = SimpleFreeDB._get_code(lines[0])
+        code = self._get_code(lines[0])
         if code != 210:
             return None
 
