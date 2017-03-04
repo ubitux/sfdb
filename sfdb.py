@@ -45,7 +45,8 @@ class _SimpleFreeDB:
         req = urllib.request.urlopen(url)
         return req.read().decode('utf-8')
 
-    _get_code = lambda line: int(line.split(maxsplit=1)[0])
+    def _get_code(self, line):
+        return int(line.split(maxsplit=1)[0])
 
     def query(self, discid, ntrks, offsets, nsecs):
         cmd = 'query %x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
