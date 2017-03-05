@@ -94,6 +94,8 @@ class SimpleFreeDB:
             if not line or line.startswith('#'):
                 continue
             key, value = line.split('=', maxsplit=1)
+            if not value:
+                continue
             if key == 'DTITLE':
                 artist, title = self._split_dtitle(value)
                 data['artist'] = artist
