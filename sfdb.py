@@ -57,6 +57,14 @@ class SimpleFreeDB:
         artist, title = re.split(self._slash_split_regex, dtitle, maxsplit=1)
         return artist.rstrip(), title.lstrip()
 
+    def _craft_match(self, categ, discid_str, dtitle):
+        artist, title = self._split_dtitle(dtitle)
+        return {'category': categ,
+                'discid': int(discid_str, 16),
+                'artist_title': dtitle,
+                'artist': artist,
+                'title': title}
+
     def query(self, discid, ntrks, offsets, nsecs):
         cmd = 'query %08x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
         data = self._cddb_cmd(cmd)
@@ -65,16 +73,12 @@ class SimpleFreeDB:
         matches = []
         if code == 200:
             line = lines[0]
-            _, categ, discid_str, dtitle = line.split(maxsplit=3)
-            artist, title = self._split_dtitle(dtitle)
-            matches.append((categ, int(discid_str, 16), artist, title))
+            matches.append(self._craft_match(*line.split(maxsplit=3)[1:]))
         elif code in (210, 211):
             for line in lines[1:]:
                 if line == '.':
                     break
-                categ, discid_str, dtitle = line.split(maxsplit=2)
-                artist, title = self._split_dtitle(dtitle)
-                matches.append((categ, int(discid_str, 16), artist, title))
+                matches.append(self._craft_match(*line.split(maxsplit=2)))
         return matches
 
     def read(self, categ, discid):
@@ -128,7 +132,7 @@ def main():
     assert fdb._split_dtitle('foo \\/ bar / bla / baz') == ('foo \\/ bar', 'bla / baz')
     for i, query in enumerate(test_queries):
         for match in fdb.query(*query):
-            pprint.pprint(fdb.read(match[0], match[1]))
+            pprint.pprint(fdb.read(match['category'], match['discid']))
 
 if __name__ == '__main__':
     main()
