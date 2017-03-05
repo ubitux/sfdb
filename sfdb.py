@@ -98,6 +98,7 @@ class SimpleFreeDB:
                 continue
             if key == 'DTITLE':
                 artist, title = self._split_dtitle(value)
+                data['artist_title'] = value
                 data['artist'] = artist
                 data['title'] = title
             elif key == 'DYEAR':
