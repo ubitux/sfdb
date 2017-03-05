@@ -54,8 +54,8 @@ class SimpleFreeDB:
     def _split_dtitle(self, dtitle):
         # Note: we can not use a simple dtitle.split('/') here because the
         # slash could be escaped.
-        author, title = re.split(self._slash_split_regex, dtitle, maxsplit=1)
-        return author.rstrip(), title.lstrip()
+        artist, title = re.split(self._slash_split_regex, dtitle, maxsplit=1)
+        return artist.rstrip(), title.lstrip()
 
     def query(self, discid, ntrks, offsets, nsecs):
         cmd = 'query %08x %d %s %d' % (discid, ntrks, ' '.join(str(x) for x in offsets), nsecs)
